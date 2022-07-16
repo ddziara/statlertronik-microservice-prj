@@ -23,8 +23,7 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-app.get("/api/:date_string", function (req, res) {
-  const date = new Date(req.params["date_string"]);
+const date2Response = (res, date) => {
   const unix = date.valueOf();
   const utc = date.toUTCString();
 
@@ -33,6 +32,16 @@ app.get("/api/:date_string", function (req, res) {
   } else {
     res.json({ error: "Invalid Date" });
   }
+}
+
+app.get("/api/:date_string", function (req, res) {
+  const date = new Date(req.params["date_string"]);
+  date2Response(res, date);
+});
+
+app.get("/api", function (req, res) {
+  const date = new Date();
+  date2Response(res, date);
 });
 
 const port = process.env.PORT || 3000;

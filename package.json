@@ -19,9 +19,9 @@
     "url": "https://github.com/ddziara/timestamp-microservice-app.git"
   },
   "bugs": {
-    "url": "https://github.com/freeCodeCamp/freeCodeCamp/issues"
+    "url": "https://github.com/ddziara/timestamp-microservice-app/issues"
   },
-  "homepage": "https://github.com/freeCodeCamp/boilerplate-project-timestamp#readme",
+  "homepage": "https://github.com/ddziara/timestamp-microservice-app#readme",
   "author": "freeCodeCamp <team@freecodecamp.org>",
   "keywords": [
     "node",

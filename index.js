@@ -37,7 +37,7 @@ const date2Response = (res, date) => {
 app.get("/api/:date_string", function (req, res) {
   let date;
 
-  if(/[1-9][0-9]*/.test(req.params["date_string"])) {
+  if(/^[1-9][0-9]*$/.test(req.params["date_string"])) {
     const val = parseInt(req.params["date_string"]);
     date = new Date(val);
   }

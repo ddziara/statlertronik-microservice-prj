@@ -24,6 +24,11 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api/:date_string", function (req, res) {
+  res.json({error: 'Invalid Date'});
+});
+
+
 const port = process.env.PORT || 3000;
 
 // listen for requests :)

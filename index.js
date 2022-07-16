@@ -25,7 +25,7 @@ app.get("/api/hello", function (req, res) {
 
 app.get("/api/:date_string", function (req, res) {
   try {
-    const unixTimestamp = new Date(req.params["date_string"]).valueOf()/1000;
+    const unixTimestamp = new Date(req.params["date_string"]).valueOf();
     res.json({ unix: unixTimestamp });
   } catch (e) {
     res.json({ error: "Invalid Date" });

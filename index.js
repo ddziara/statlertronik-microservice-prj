@@ -25,8 +25,8 @@ app.get("/api/hello", function (req, res) {
 
 app.get("/api/:date_string", function (req, res) {
   const unixTimestamp = new Date(req.params["date_string"]).valueOf();
-  
-  if (unixTimestamp !== NaN) {
+
+  if (!isNaN(unixTimestamp)) {
     res.json({ unix: unixTimestamp });
   } else {
     res.json({ error: "Invalid Date" });

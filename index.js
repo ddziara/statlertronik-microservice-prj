@@ -35,8 +35,17 @@ const date2Response = (res, date) => {
 }
 
 app.get("/api/:date_string", function (req, res) {
-  const date = new Date(req.params["date_string"]);
-  date2Response(res, date);
+  const val = parseInt(req.params["date_string"]);
+  let date;
+
+  if(!isNaN(val)) {
+    date = new Date(val);
+  }
+  else {
+    date = new Date(req.params["date_string"]);
+  }
+
+  date2Response(res, date);  
 });
 
 app.get("/api", function (req, res) {

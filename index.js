@@ -31,6 +31,14 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
+app.get("/api/whoami", function (req, res) {
+  res.json({
+    ipaddress: req.socket.localAddress+" sicks",
+    language: req.headers["accept-language"],
+    software: req.headers["user-agent"],
+  });
+});
+
 const date2Response = (res, date) => {
   const unix = date.getTime();
   const utc = date.toUTCString();
@@ -40,20 +48,19 @@ const date2Response = (res, date) => {
   } else {
     res.json({ error: "Invalid Date" });
   }
-}
+};
 
 app.get("/api/:date_string", function (req, res) {
   let date;
 
-  if(/^[1-9][0-9]*$/.test(req.params["date_string"])) {
+  if (/^[1-9][0-9]*$/.test(req.params["date_string"])) {
     const val = parseInt(req.params["date_string"]);
     date = new Date(val);
-  }
-  else {
+  } else {
     date = new Date(req.params["date_string"]);
   }
 
-  date2Response(res, date);  
+  date2Response(res, date);
 });
 
 app.get("/api", function (req, res) {

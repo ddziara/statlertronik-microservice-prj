@@ -17,13 +17,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ddziara/timestamp-microservice-app.git"
+    "url": "https://github.com/ddziara/statlertronik-microservice-prj.git"
   },
   "bugs": {
-    "url": "https://github.com/ddziara/timestamp-microservice-app/issues"
+    "url": "https://github.com/ddziara/statlertronik-microservice-prj/issues"
   },
-  "homepage": "https://github.com/ddziara/timestamp-microservice-app#readme",
-  "author": "freeCodeCamp <team@freecodecamp.org>",
+  "homepage": "https://github.com/ddziara/statlertronik-microservice-prj#readme",
+  "author": "Dariusz Dziara <ddziara@poczta.onet.pl>",
   "keywords": [
     "node",
     "express",

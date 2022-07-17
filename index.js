@@ -24,7 +24,7 @@ app.get("/api/hello", function (req, res) {
 });
 
 const date2Response = (res, date) => {
-  const unix = date.valueOf();
+  const unix = date.getTime();
   const utc = date.toUTCString();
 
   if (!isNaN(unix)) {

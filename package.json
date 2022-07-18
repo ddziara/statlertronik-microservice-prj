@@ -1,7 +1,7 @@
 {
-  "name": "timestamp-microservice-app",
+  "name": "statlertronik-microservice-prj",
   "version": "0.0.1",
-  "description": "Timestamp Microservice Application",
+  "description": "Statlertronik Microservice Project",
   "engines": {
     "node": "16.x"
   },

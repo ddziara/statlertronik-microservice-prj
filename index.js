@@ -4,10 +4,15 @@
 // init project
 var express = require("express");
 var app = express();
+const mongo = require("mongodb");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const shortid = require("shortid");
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
 var cors = require("cors");
+const { use } = require("express/lib/application");
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -72,9 +77,73 @@ app.get("/api", function (req, res) {
   date2Response(res, date);
 });
 
+const urlEncodedParser = bodyParser.urlencoded({ extended: false });
+const jsonParser = bodyParser.json();
+
+let shortenedUrlSchema = new mongoose.Schema({
+  shortenedUrl: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  orgUrl: {
+    type: String,
+    required: true,
+  },
+});
+
+const ShortenedUrlModel = mongoose.model("ShortenedUrl", shortenedUrlSchema);
+
+app.post(
+  "/api/shorturl",
+  urlEncodedParser,
+  jsonParser,
+  async function (req, res) {
+    const original_url = req.body.url;
+    const id = shortid.generate();
+
+    // check if valid URL
+    if (
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(
+        original_url
+      )
+    ) {
+      try {
+        const doc = await ShortenedUrlModel.find({ orgUrl });
+        res.json({ original_url, short_url: doc.shortenedUrl });
+      } catch (e) {
+        let shortenedUrl = new ShortenedUrlModel({
+          shortenedUrl: id,
+          orgUrl: original_url,
+        });
+
+        try {
+          await shortenedUrl.save();
+          res.json({ original_url, short_url: id });
+        } catch (e) {}
+      }
+    } else {
+      res.json({ error: "invalid url" });
+    }
+  }
+);
+
+app.get("/api/shorturl/:shortenedurl", async function (req, res) {
+  const shortenedUrl = req.params["shortenedurl"];
+
+  try {
+    const doc = await ShortenedUrlModel.find({ shortenedUrl });
+    res.redirect(doc[0].orgUrl);
+  } catch (e) {}
+});
+
 const port = process.env.PORT || 3000;
 
-// listen for requests :)
-var listener = app.listen(port, function () {
-  console.log("Your app is listening on port " + listener.address().port);
-});
+(async () => {
+  await mongoose.connect(process.env.DB_URI);
+
+  // listen for requests :)
+  var listener = app.listen(port, function () {
+    console.log("Your app is listening on port " + listener.address().port);
+  });
+})();

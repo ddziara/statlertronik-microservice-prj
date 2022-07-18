@@ -8,12 +8,18 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "start:env": "node -r dotenv/config index.js",
     "debug": "node --inspect-brk index.js",
+    "debug:env": "node -r dotenv/config --inspect-brk index.js",
     "test": "jest"
   },
   "dependencies": {
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.0",
     "express": "^4.15.2",
-    "cors": "^2.8.0"
+    "mongodb": "^4.7.0",
+    "mongoose": "^6.4.0",
+    "shortid": "^2.2.16"
   },
   "repository": {
     "type": "git",
@@ -30,5 +36,8 @@
     "heroku",
     "freeCodeCamp"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "dotenv": "^16.0.1"
+  }
 }

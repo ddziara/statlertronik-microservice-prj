@@ -102,7 +102,7 @@ app.post(
         userId,
         description,
         duration,
-        date: (date ? new Date(date) : new Date()).getTime(),
+        date: (date ? new Date(date) : new Date()).toISOString(),
       });
 
       const doc = await exercise.save();
@@ -126,16 +126,31 @@ app.get("/api/users/:_id/logs", async function (req, res) {
   const users = await UserModel.find({ _id: userId });
 
   if (users.length > 0) {
-    const docs = await ExerciseModel.find({ userId });
+    const { from, to, limit } = req.query;
+    const dateCrit = {};
+    if (from) {
+      dateCrit["$gte"] = new Date(from);
+    }
+    if (to) {
+      const toDate = new Date(to);
+      toDate.setDate(toDate.getDate() + 1);
+      dateCrit["$lt"] = toDate;
+    }
+    const dateFld = from || to ? { date: dateCrit } : {};
+    const docs = await ExerciseModel.find({ userId, ...dateFld });
+    let logArr = docs.map((item) => ({
+      description: item.description,
+      duration: item.duration,
+      date: new Date(item.date).toDateString(),
+    }));
+
+    if (limit) logArr = logArr.slice(parseInt(limit));
+
     return res.json({
       username: users[0].username,
       count: docs.length,
       _id: users[0].id.toString(),
-      log: docs.map((item) => ({
-        description: item.description,
-        duration: item.duration,
-        date: new Date(item.date).toDateString(),
-      })),
+      log: logArr,
     });
   } else {
     res.status = 404;

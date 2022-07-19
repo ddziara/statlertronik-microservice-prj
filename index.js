@@ -104,7 +104,6 @@ app.post(
   jsonParser,
   async function (req, res) {
     const original_url = req.body.url;
-    const id = shortid.generate();
 
     // check if valid URL
     if (
@@ -116,6 +115,8 @@ app.post(
         const doc = await ShortenedUrlModel.find({ orgUrl });
         res.json({ original_url, short_url: doc.shortenedUrl });
       } catch (e) {
+        const id = shortid.generate();
+
         let shortenedUrl = new ShortenedUrlModel({
           shortenedUrl: id,
           orgUrl: original_url,
@@ -139,6 +140,40 @@ app.get("/api/shorturl/:shortenedurl", async function (req, res) {
     const doc = await ShortenedUrlModel.find({ shortenedUrl });
     res.redirect(doc[0].orgUrl);
   } catch (e) {}
+});
+
+// Exercise Tracker
+
+let userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+});
+
+const UserModel = mongoose.model("UserModel", userSchema);
+
+app.post("/api/users", urlEncodedParser, jsonParser, async function (req, res) {
+  const username = req.body["username"];
+
+  const doc = await UserModel.find({ username })[0];
+
+  if (doc) {
+    return res.json({ _id: doc._id.id.toString(), username: doc.username });
+  } else {
+    // const _id = shortid.generate();
+
+    const user = new UserModel({
+      username,
+    });
+
+    try {
+      const doc = await user.save();
+      return res.json({ _id: doc._id.id.toString("base64"), username: doc.username });
+    } catch (e) {}
+  }
+
+  console.log(req.body);
 });
 
 const port = process.env.PORT || 3000;

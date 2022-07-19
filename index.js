@@ -9,6 +9,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const shortid = require("shortid");
 
+const urlEncodedParser = bodyParser.urlencoded({ extended: false });
+const jsonParser = bodyParser.json();
+
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
 var cors = require("cors");
@@ -52,6 +55,52 @@ app.get("/api/whoami", function (req, res) {
   });
 });
 
+// Exercise Tracker
+
+let userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+});
+
+const UserModel = mongoose.model("UserModel", userSchema);
+
+app.get("/api/users", async (req, res) => {
+  const docs = await UserModel.find({});
+  res.json(docs);
+});
+
+app.post("/api/users", urlEncodedParser, jsonParser, async function (req, res) {
+  const username = req.body["username"];
+
+  const docs = await UserModel.find({ username });
+
+  if (docs.length > 0) {
+    return res.json({
+      _id: docs[0]._id.id.toString("base64"),
+      username: docs[0].username,
+    });
+  } else {
+    // const _id = shortid.generate();
+
+    const user = new UserModel({
+      username,
+    });
+
+    try {
+      const doc = await user.save();
+      return res.json({
+        _id: doc._id.id.toString("base64"),
+        username: doc.username,
+      });
+    } catch (e) {}
+  }
+
+  console.log(req.body);
+});
+
+// timestamp
 const date2Response = (res, date) => {
   const unix = date.getTime();
   const utc = date.toUTCString();
@@ -81,9 +130,7 @@ app.get("/api", function (req, res) {
   date2Response(res, date);
 });
 
-const urlEncodedParser = bodyParser.urlencoded({ extended: false });
-const jsonParser = bodyParser.json();
-
+// Shorten URL
 let shortenedUrlSchema = new mongoose.Schema({
   shortenedUrl: {
     type: String,
@@ -111,10 +158,11 @@ app.post(
         original_url
       )
     ) {
-      try {
-        const doc = await ShortenedUrlModel.find({ orgUrl });
-        res.json({ original_url, short_url: doc.shortenedUrl });
-      } catch (e) {
+      const docs = await ShortenedUrlModel.find({ orgUrl: original_url });
+
+      if (docs.length > 0) {
+        return res.json({ original_url, short_url: docs[0].shortenedUrl });
+      } else {
         const id = shortid.generate();
 
         let shortenedUrl = new ShortenedUrlModel({
@@ -136,44 +184,14 @@ app.post(
 app.get("/api/shorturl/:shortenedurl", async function (req, res) {
   const shortenedUrl = req.params["shortenedurl"];
 
-  try {
-    const doc = await ShortenedUrlModel.find({ shortenedUrl });
-    res.redirect(doc[0].orgUrl);
-  } catch (e) {}
-});
+  const docs = await ShortenedUrlModel.find({ shortenedUrl });
 
-// Exercise Tracker
-
-let userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-  },
-});
-
-const UserModel = mongoose.model("UserModel", userSchema);
-
-app.post("/api/users", urlEncodedParser, jsonParser, async function (req, res) {
-  const username = req.body["username"];
-
-  const doc = await UserModel.find({ username })[0];
-
-  if (doc) {
-    return res.json({ _id: doc._id.id.toString(), username: doc.username });
+  if (docs.length > 0) {
+    return res.redirect(docs[0].orgUrl);
   } else {
-    // const _id = shortid.generate();
-
-    const user = new UserModel({
-      username,
-    });
-
-    try {
-      const doc = await user.save();
-      return res.json({ _id: doc._id.id.toString("base64"), username: doc.username });
-    } catch (e) {}
+    res.statusCode = 404;
+    return res.json({ error: "Path not found" });
   }
-
-  console.log(req.body);
 });
 
 const port = process.env.PORT || 3000;

@@ -66,6 +66,55 @@ let userSchema = new mongoose.Schema({
 
 const UserModel = mongoose.model("UserModel", userSchema);
 
+let exerciseSchema = new mongoose.Schema({
+  userId: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  duration: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: String,
+  },
+});
+
+const ExerciseModel = mongoose.model("ExerciseModel", exerciseSchema);
+
+app.post(
+  "/api/users/:_id/exercises",
+  urlEncodedParser,
+  jsonParser,
+  async function (req, res) {
+    const userId = req.params["_id"];
+
+    const users = await UserModel.find({ _id: userId });
+
+    if (users.length > 0) {
+      const { description, duration, date } = req.body;
+      const exercise = new ExerciseModel({
+        userId,
+        description,
+        duration,
+        date: date ? date : new Date(),
+      });
+
+      const doc = await exercise.save();
+      return res.json({_id: users[0]._id.toString(), username: users[0].username, description: doc.description, duration: doc.duration, date: doc.date});
+    } else {
+      res.status = 404;
+      return res.json({ error: "No such user" });
+    }
+
+    // description, duration, and optionally date
+  }
+);
+
 app.get("/api/users", async (req, res) => {
   const docs = await UserModel.find({});
   res.json(docs);
@@ -78,7 +127,7 @@ app.post("/api/users", urlEncodedParser, jsonParser, async function (req, res) {
 
   if (docs.length > 0) {
     return res.json({
-      _id: docs[0]._id.id.toString("base64"),
+      _id: docs[0]._id.toString(),
       username: docs[0].username,
     });
   } else {
@@ -91,13 +140,11 @@ app.post("/api/users", urlEncodedParser, jsonParser, async function (req, res) {
     try {
       const doc = await user.save();
       return res.json({
-        _id: doc._id.id.toString("base64"),
+        _id: doc._id.toString(),
         username: doc.username,
       });
     } catch (e) {}
   }
-
-  console.log(req.body);
 });
 
 // timestamp

@@ -111,6 +111,7 @@ app.post(
         description: doc.description,
         duration: doc.duration,
         date: new Date(doc.date).toDateString(),
+        _id: doc.id.toString(),
       });
     } else {
       res.status = 404;

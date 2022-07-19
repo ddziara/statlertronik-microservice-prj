@@ -80,7 +80,8 @@ let exerciseSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String,
+    type: Date,
+    required: true,
   },
 });
 
@@ -101,11 +102,16 @@ app.post(
         userId,
         description,
         duration,
-        date: date ? date : new Date(),
+        date: (date ? new Date(date) : new Date()).getTime(),
       });
 
       const doc = await exercise.save();
-      return res.json({_id: users[0]._id.toString(), username: users[0].username, description: doc.description, duration: doc.duration, date: doc.date});
+      return res.json({
+        username: users[0].username,
+        description: doc.description,
+        duration: doc.duration,
+        date: new Date(doc.date).toDateString(),
+      });
     } else {
       res.status = 404;
       return res.json({ error: "No such user" });

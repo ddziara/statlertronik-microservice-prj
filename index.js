@@ -117,10 +117,31 @@ app.post(
       res.status = 404;
       return res.json({ error: "No such user" });
     }
-
-    // description, duration, and optionally date
   }
 );
+
+app.get("/api/users/:_id/logs", async function (req, res) {
+  const userId = req.params["_id"];
+
+  const users = await UserModel.find({ _id: userId });
+
+  if (users.length > 0) {
+    const docs = await ExerciseModel.find({ userId });
+    return res.json({
+      username: users[0].username,
+      count: docs.length,
+      _id: users[0].id.toString(),
+      log: docs.map((item) => ({
+        description: item.description,
+        duration: item.duration,
+        date: new Date(item.date).toDateString(),
+      })),
+    });
+  } else {
+    res.status = 404;
+    return res.json({ error: "No such user" });
+  }
+});
 
 app.get("/api/users", async (req, res) => {
   const docs = await UserModel.find({});

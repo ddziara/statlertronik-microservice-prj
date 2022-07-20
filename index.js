@@ -11,6 +11,8 @@ const shortid = require("shortid");
 
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
 const jsonParser = bodyParser.json();
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
@@ -40,6 +42,10 @@ app.get("/URLShortenerMicroservice", function (req, res) {
 
 app.get("/exerciseTracker", function (req, res) {
   res.sendFile(__dirname + "/views/exerciseTracker.html");
+});
+
+app.get("/fileMetadata", function (req, res) {
+  res.sendFile(__dirname + "/views/fileMetadata.html");
 });
 
 // your first API endpoint...
@@ -190,7 +196,18 @@ app.post("/api/users", urlEncodedParser, jsonParser, async function (req, res) {
   }
 });
 
-// timestamp
+// File Metadata
+app.post(
+  "/api/fileanalyse",
+  upload.single('upfile'),
+  async function (req, res) {
+    const fileInfo = req.file;
+
+    res.json({ name: fileInfo.originalname, type: fileInfo.mimetype, size: fileInfo.size });
+  }
+);
+
+// Timestamp
 const date2Response = (res, date) => {
   const unix = date.getTime();
   const utc = date.toUTCString();

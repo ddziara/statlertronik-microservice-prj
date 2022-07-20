@@ -144,7 +144,7 @@ app.get("/api/users/:_id/logs", async function (req, res) {
       date: new Date(item.date).toDateString(),
     }));
 
-    if (limit) logArr = logArr.slice(parseInt(limit));
+    if (limit) logArr = logArr.slice(0, parseInt(limit));
 
     return res.json({
       username: users[0].username,

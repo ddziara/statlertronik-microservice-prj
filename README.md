@@ -18,3 +18,9 @@ If the input date string is invalid, the api returns an object having the struct
 
 An empty date parameter should return the current time in a JSON object with a **unix** & **utx** keys.
 
+## Request Header Parser Microservice  
+https://statlertronik-microservice-prj.herokuapp.com/requestHeaderParser
+
+A request to /api/whoami should return a JSON object with your IP address in the **ipaddress** key, your preferred language in the **language** key and your software in the **software** key.
+
+

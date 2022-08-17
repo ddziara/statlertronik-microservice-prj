@@ -50,5 +50,16 @@ The response returned from POST /api/users/:_id/exercises will be the user objec
 
 You can make a GET request to /api/users/:_id/logs to retrieve a full exercise log of any user, with a **count** property representing the number of exercises that belong to that user, a **log** array of all the exercises added. Each item in the log array that is returned from GET /api/users/:_id/logs is an object that should have a **description**, **duration**, and **date** properties. You can add from, to and limit parameters to a GET /api/users/:_id/logs request to retrieve part of the log of any user. from and to are dates in yyyy-mm-dd format. limit is an integer of how many logs to send back.
 
+## File Metadata Microservice  
+https://statlertronik-microservice-prj.herokuapp.com/fileMetadata
+
+![file-metadata](https://user-images.githubusercontent.com/54773918/185170015-681ac82f-e604-4c02-b34e-e47e15b2239e.png)
+
+You can submit a form that includes a file upload. The form file input field has the name attribute set to upfile.
+
+When you submit a file, you receive the file **name**, **type**, and **size** in bytes within the JSON response.
+
+
+
 
 
